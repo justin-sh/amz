@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping(value = "/file")
 public class FileUploadController {
 
-    @GetMapping(value = "/")
+    @GetMapping
     public String home() {
         System.out.println("test");
         return "index.html";
