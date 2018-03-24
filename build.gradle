@@ -1,9 +1,11 @@
 buildscript {
     repositories {
         mavenCentral()
+        maven { url 'http://repo.spring.io/plugins-release' }
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:2.0.0.RELEASE"
+        classpath 'io.spring.gradle:propdeps-plugin:0.0.9.RELEASE'
     }
 }
 
@@ -11,6 +13,13 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
+configure(allprojects) {
+    apply plugin: 'propdeps'
+    apply plugin: 'propdeps-maven'
+    apply plugin: 'propdeps-idea'
+    apply plugin: 'propdeps-eclipse'
+}
 
 bootJar {
     baseName = 'com.lu.justin.tool'
@@ -27,6 +36,8 @@ targetCompatibility = 1.8
 dependencies {
     compile 'org.springframework.boot:spring-boot-starter-web'
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    optional "org.springframework.boot:spring-boot-configuration-processor"
 
 //    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
+compileJava.dependsOn(processResources)
