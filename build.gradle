@@ -22,7 +22,7 @@ configure(allprojects) {
 }
 
 bootJar {
-    baseName = 'com.lu.justin.tool'
+    baseName = 'amz'
     version = '1.0-SNAPSHOT'
 }
 
