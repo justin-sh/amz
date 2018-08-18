@@ -38,6 +38,9 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     optional "org.springframework.boot:spring-boot-configuration-processor"
 
+    compile 'org.apache.httpcomponents:httpclient:4.3.1'
+    compile 'org.apache.httpcomponents:httpcore:4.3'
+
 //    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 compileJava.dependsOn(processResources)
