@@ -89,7 +89,7 @@ public class LuController {
                     e.printStackTrace();
                 }
                 LocalDateTime _e = LocalDateTime.now();
-                log.info("Get total count:{} ms[from:{} to:{}]", Duration.between(_s, _e), _s, _e);
+                log.info("Get success rate:{} ms[from:{} to:{}]", Duration.between(_s, _e), _s, _e);
             }));
         }
 
