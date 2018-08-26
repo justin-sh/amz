@@ -6,7 +6,6 @@ import com.lu.justin.tool.util.Caches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +25,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 @Component
-@EnableScheduling
 public class ProductCountJob implements BeanPostProcessor {
 
     private final static Logger log = LoggerFactory.getLogger(ProductCountJob.class);

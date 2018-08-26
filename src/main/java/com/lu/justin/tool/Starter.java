@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.servlet.MultipartConfigElement;
 import java.util.Arrays;
@@ -21,6 +22,7 @@ import java.util.Arrays;
 
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
+@EnableScheduling
 public class Starter {
 
     private static final Logger log = LoggerFactory.getLogger(Starter.class);
@@ -32,11 +34,6 @@ public class Starter {
     @Bean
     CommandLineRunner init(StorageService storageService) {
         return args -> {
-            log.info("Running default command line with: " + Arrays.asList(args));
-            log.info("Running default command line with: " + Arrays.asList(args));
-            log.info("Running default command line with: " + Arrays.asList(args));
-            log.info("Running default command line with: " + Arrays.asList(args));
-            log.info("Running default command line with: " + Arrays.asList(args));
             log.info("Running default command line with: " + Arrays.asList(args));
             storageService.deleteAll();
             storageService.init();
