@@ -113,4 +113,9 @@ public class ProductListJob {
         return b.build();
     }
 
+    @Scheduled(cron = "10 * * * * ?")
+    public void summariseProductPerMinute(){
+
+    }
+
 }
