@@ -15,10 +15,10 @@ import java.util.Objects;
 public class ProductSummaryDTO extends BaseDTO {
 
     // every minutes
-    @NotNull
-    LocalDate date;
-    @NotNull
-    LocalTime time;
+//    @NotNull
+//    LocalDate date;
+//    @NotNull
+//    LocalTime time;
     // product value
     BigDecimal value;
 
@@ -26,26 +26,32 @@ public class ProductSummaryDTO extends BaseDTO {
     BigDecimal amount;
     int count;
 
-    public ProductSummaryDTO(@NotNull LocalDate date, @NotNull LocalTime time, BigDecimal value, BigDecimal amount, int count) {
-        this.date = date;
-        this.time = time;
+    public ProductSummaryDTO() {
+        this.value = BigDecimal.ZERO;
+        this.amount = BigDecimal.ZERO;
+        this.count = 0;
+    }
+
+    public ProductSummaryDTO(/*@NotNull LocalDate date, @NotNull LocalTime time,*/ BigDecimal value, BigDecimal amount, int count) {
+//        this.date = date;
+//        this.time = time;
         this.value = value;
         this.amount = amount;
         this.count = count;
         super.setBaseInfo();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductSummaryDTO that = (ProductSummaryDTO) o;
-        return Objects.equals(date, that.date) && Objects.equals(time, that.time);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(LocalDateTime.of(date, time));
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//        ProductSummaryDTO that = (ProductSummaryDTO) o;
+//        return Objects.equals(date, that.date) && Objects.equals(time, that.time);
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//
+//        return Objects.hash(LocalDateTime.of(date, time));
+//    }
 }

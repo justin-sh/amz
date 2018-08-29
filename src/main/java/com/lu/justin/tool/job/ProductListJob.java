@@ -10,11 +10,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.net.URISyntaxException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -113,9 +117,32 @@ public class ProductListJob {
         return b.build();
     }
 
-    @Scheduled(cron = "10 * * * * ?")
-    public void summariseProductPerMinute(){
+    @Scheduled(cron = "*/10 * * * * ?")
+    public void summariseProductPerMinute() {
+        //with no second & nono
+//        Date now = Date.from(LocalDateTime.now().withSecond(0).withNano(0).atZone(ZoneId.systemDefault()).toInstant());
+//        Example<ProductDTO> q = Example.of(new ProductDTO.Builder().validFrom(now).validTo(now).build());
 
+//        ExampleMatcher m = ExampleMatcher.matching().withMatcher("validFrom", ExampleMatcher.GenericPropertyMatchers..of())
+
+        log.info("result:{}", productInfoDAO.groupInfoByDate(LocalDateTime.now().minusMinutes(1)));
+
+        LocalDateTime from = LocalDateTime.now().withSecond(0).withNano(0);
+        LocalDateTime to = from.withSecond(59);
+
+        List<ProductDTO> list = productInfoDAO.findByCondition(Query.query(Criteria.where("validFrom").lte(to).and("validTo").gte(from)));
+
+        log.info("========\n{}\n", list);
+        int count = 0;
+        BigDecimal sumValue = BigDecimal.ZERO;
+        BigDecimal subAmount = BigDecimal.ZERO;
+        for (ProductDTO p : list) {
+            count++;
+            sumValue = sumValue.add(p.getValue());
+            subAmount = subAmount.add(p.getAmount());
+        }
+
+        log.info("sum result:{} {} {}", count, sumValue, subAmount);
     }
 
 }
