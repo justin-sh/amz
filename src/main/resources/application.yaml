@@ -12,6 +12,13 @@ spring:
   data:
     mongodb:
       uri: mongodb://localhost:27017/test
+      port: 27017
+  mongodb:
+    embedded:
+      version: 3.2.2
+      storage:
+        database-dir: ${user.home}/.db/mongo/
+
 #  datasource:
 #    url: jdbc:sqlite:${user.home}/.db/amz.db
 #    driver-class-name:
