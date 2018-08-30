@@ -1,7 +1,10 @@
 package com.lu.justin.tool.job;
 
 import com.lu.justin.tool.dao.ProductInfoDAO;
+import com.lu.justin.tool.dao.ProductSummaryDAO;
+import com.lu.justin.tool.dao.dto.BaseDTO;
 import com.lu.justin.tool.dao.dto.ProductDTO;
+import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
 import org.apache.http.client.utils.URIBuilder;
 import org.jsoup.Jsoup;
@@ -10,6 +13,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,10 +23,8 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,6 +39,9 @@ public class ProductListJob {
 
     @Resource
     private ProductInfoDAO productInfoDAO;
+
+    @Resource
+    private ProductSummaryDAO productSummaryDAO;
 
     @Scheduled(cron = "1/5 * * * * ?")
     public void getProductInfo() {
@@ -108,7 +113,10 @@ public class ProductListJob {
         b.investPeriod(e.select(".invest-period p").text().replace("个月", ""));
         b.value(e.select(".product-value p").text().replace("元", "").replaceAll(",", ""));
         b.nextDate(e.selectFirst(".acceptance-bank span").text().replace("预计下一收款日：", ""));
-        b.fee(e.select(".acceptance-bank span.ml20").text().replace("信息服务费率：", "").replace("%/月", ""));
+        Elements fee = e.select(".acceptance-bank span.ml20");
+        if (!fee.isEmpty()) {
+            b.fee(fee.text().replace("信息服务费率：", "").replace("%/月", ""));
+        }
         b.amount(e.select(".product-amount em").text().replaceAll(",", ""));
         Date now = new Date();
         b.validFrom(now);
@@ -119,15 +127,12 @@ public class ProductListJob {
 
     @Scheduled(cron = "*/10 * * * * ?")
     public void summariseProductPerMinute() {
-        //with no second & nono
-//        Date now = Date.from(LocalDateTime.now().withSecond(0).withNano(0).atZone(ZoneId.systemDefault()).toInstant());
-//        Example<ProductDTO> q = Example.of(new ProductDTO.Builder().validFrom(now).validTo(now).build());
 
-//        ExampleMatcher m = ExampleMatcher.matching().withMatcher("validFrom", ExampleMatcher.GenericPropertyMatchers..of())
+        LocalDateTime mm1 = LocalDateTime.now().minusMinutes(1);
+        // BigDecimal cannot sum in mongodb
+//        log.info("result:{}", productInfoDAO.groupInfoByDate(mm1));
 
-        log.info("result:{}", productInfoDAO.groupInfoByDate(LocalDateTime.now().minusMinutes(1)));
-
-        LocalDateTime from = LocalDateTime.now().withSecond(0).withNano(0);
+        LocalDateTime from = mm1.withSecond(0).withNano(0);
         LocalDateTime to = from.withSecond(59);
 
         List<ProductDTO> list = productInfoDAO.findByCondition(Query.query(Criteria.where("validFrom").lte(to).and("validTo").gte(from)));
@@ -135,14 +140,31 @@ public class ProductListJob {
         log.info("========\n{}\n", list);
         int count = 0;
         BigDecimal sumValue = BigDecimal.ZERO;
-        BigDecimal subAmount = BigDecimal.ZERO;
+        BigDecimal sumAmount = BigDecimal.ZERO;
         for (ProductDTO p : list) {
             count++;
             sumValue = sumValue.add(p.getValue());
-            subAmount = subAmount.add(p.getAmount());
+            sumAmount = sumAmount.add(p.getAmount());
         }
 
-        log.info("sum result:{} {} {}", count, sumValue, subAmount);
+        ProductSummaryDTO ps = new ProductSummaryDTO(Date.from(from.atZone(ZoneId.systemDefault()).toInstant()));
+        Optional<ProductSummaryDTO> existPs = productSummaryDAO.findOne(Example.of(ps));
+
+        ps.setBaseInfo();
+
+        if (existPs.isPresent()) {
+            ps = existPs.get();
+        }
+
+        ps.setAmount(sumAmount);
+        ps.setCount(count);
+        ps.setValue(sumValue);
+        ps.setUpdatedAt(new Date());
+        ps.setUpdatedBy(BaseDTO.SYS);
+
+        productSummaryDAO.save(ps);
+
+        log.info("sum result:count {}, value:{} amount:{}", count, sumValue, sumAmount);
     }
 
 }

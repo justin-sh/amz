@@ -8,7 +8,7 @@ import java.util.Date;
 
 public class BaseDTO implements Serializable {
 
-    final static String SYS = "SYS";
+    public final static String SYS = "SYS";
 
     @Id
     protected String id;
@@ -17,7 +17,7 @@ public class BaseDTO implements Serializable {
     protected Date updatedAt;
     protected String updatedBy;
 
-    protected void setBaseInfo() {
+    public void setBaseInfo() {
         this.createdAt = new Date();
         this.createdBy = SYS;
         this.updatedBy = SYS;

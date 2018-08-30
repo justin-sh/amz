@@ -20,13 +20,13 @@ public class ProductDTO extends BaseDTO {
     BigDecimal value;
     BigDecimal amount;
     String nextDate;
-    BigDecimal fee;
+    BigDecimal fee = BigDecimal.ZERO;
 
     Date validFrom;
     Date validTo;
 
     private ProductDTO() {
-        this.setBaseInfo();
+
     }
 
     public String getPrdId() {
@@ -78,11 +78,11 @@ public class ProductDTO extends BaseDTO {
     }
 
     public void setValidFrom(Date validFrom) {
-        this.validFrom = (Date)validFrom.clone();
+        this.validFrom = (Date) validFrom.clone();
     }
 
     public void setValidTo(Date validTo) {
-        this.validTo = (Date)validTo.clone();
+        this.validTo = (Date) validTo.clone();
     }
 
     @Override
@@ -105,6 +105,7 @@ public class ProductDTO extends BaseDTO {
 
         public Builder() {
             productDTO = new ProductDTO();
+            productDTO.setBaseInfo();
         }
 
         public ProductDTO build() {
@@ -162,12 +163,12 @@ public class ProductDTO extends BaseDTO {
         }
 
         public Builder validFrom(Date validFrom) {
-            productDTO.validFrom = (Date)validFrom.clone();
+            productDTO.validFrom = (Date) validFrom.clone();
             return this;
         }
 
         public Builder validTo(Date validTo) {
-            productDTO.validTo = (Date)validTo.clone();
+            productDTO.validTo = (Date) validTo.clone();
             return this;
         }
     }
