@@ -13,7 +13,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,7 +23,10 @@ import java.math.BigDecimal;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Component
@@ -125,7 +127,7 @@ public class ProductListJob {
         return b.build();
     }
 
-    @Scheduled(cron = "*/10 * * * * ?")
+    @Scheduled(cron = "*/2 * * * * ?")
     public void summariseProductPerMinute() {
 
         LocalDateTime mm1 = LocalDateTime.now().minusMinutes(1);
@@ -137,7 +139,7 @@ public class ProductListJob {
 
         List<ProductDTO> list = productInfoDAO.findByCondition(Query.query(Criteria.where("validFrom").lte(to).and("validTo").gte(from)));
 
-        log.info("========\n{}\n", list);
+        log.info("get product info count:{}", list.size());
         int count = 0;
         BigDecimal sumValue = BigDecimal.ZERO;
         BigDecimal sumAmount = BigDecimal.ZERO;
@@ -147,13 +149,12 @@ public class ProductListJob {
             sumAmount = sumAmount.add(p.getAmount());
         }
 
-        ProductSummaryDTO ps = new ProductSummaryDTO(Date.from(from.atZone(ZoneId.systemDefault()).toInstant()));
-        Optional<ProductSummaryDTO> existPs = productSummaryDAO.findOne(Example.of(ps));
+        Date spKey = Date.from(from.atZone(ZoneId.systemDefault()).toInstant());
+        ProductSummaryDTO ps = productSummaryDAO.findByDate(spKey);
 
-        ps.setBaseInfo();
-
-        if (existPs.isPresent()) {
-            ps = existPs.get();
+        if (ps == null) {
+            ps = new ProductSummaryDTO(spKey);
+            ps.setBaseInfo();
         }
 
         ps.setAmount(sumAmount);
