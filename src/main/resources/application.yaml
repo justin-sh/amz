@@ -18,6 +18,7 @@ spring:
       version: 3.2.2
       storage:
         database-dir: ${user.home}/.db/mongo/
+      features: ["SYNC_DELAY", "ONLY_WITH_SSL", "NO_HTTP_INTERFACE_ARG"]
 
 #  datasource:
 #    url: jdbc:sqlite:${user.home}/.db/amz.db
