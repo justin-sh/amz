@@ -6,6 +6,7 @@ import com.lu.justin.tool.dao.dto.BaseDTO;
 import com.lu.justin.tool.dao.dto.ProductDTO;
 import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
+import com.lu.justin.tool.util.Constant;
 import org.apache.http.client.utils.URIBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,6 +21,8 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.net.URISyntaxException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -129,12 +132,23 @@ public class ProductListJob {
 
     @Scheduled(cron = "*/2 * * * * ?")
     public void summariseProductPerMinute() {
+        LocalDateTime mm1 = LocalDateTime.now();
+        summariseProductByTime(mm1);
 
-        LocalDateTime mm1 = LocalDateTime.now().minusMinutes(1);
+        if (mm1.getSecond() < 10) {
+            mm1 = mm1.minusMinutes(1);
+            summariseProductByTime(mm1);
+        }
+
+    }
+
+    private void summariseProductByTime(LocalDateTime mm) {
+
+//        LocalDateTime mm1 = LocalDateTime.now().minusMinutes(1);
         // BigDecimal cannot sum in mongodb
 //        log.info("result:{}", productInfoDAO.groupInfoByDate(mm1));
 
-        LocalDateTime from = mm1.withSecond(0).withNano(0);
+        LocalDateTime from = mm.withSecond(0).withNano(0);
         LocalDateTime to = from.withSecond(59);
 
         List<ProductDTO> list = productInfoDAO.findByCondition(Query.query(Criteria.where("validFrom").lte(to).and("validTo").gte(from)));
@@ -143,10 +157,33 @@ public class ProductListJob {
         int count = 0;
         BigDecimal sumValue = BigDecimal.ZERO;
         BigDecimal sumAmount = BigDecimal.ZERO;
+        int count1 = 0;
+        int count3 = 0;
+        int count5 = 0;
+        int count10 = 0;
+        int count99 = 0;
+        BigDecimal maxMarkDown = BigDecimal.ZERO;
+        BigDecimal maxMarkDownRate = BigDecimal.ZERO;
         for (ProductDTO p : list) {
             count++;
             sumValue = sumValue.add(p.getValue());
             sumAmount = sumAmount.add(p.getAmount());
+            if (p.getAmount().compareTo(Constant.W1) < 0) {
+                count1++;
+            } else if (p.getAmount().compareTo(Constant.W3) < 0) {
+                count3++;
+            } else if (p.getAmount().compareTo(Constant.W5) < 0) {
+                count5++;
+            } else if (p.getAmount().compareTo(Constant.W10) < 0) {
+                count10++;
+            } else {
+                count99++;
+            }
+
+            if (p.getValue().subtract(p.getAmount()).subtract(maxMarkDown).compareTo(BigDecimal.ZERO) > 0) {
+                maxMarkDown = p.getValue().subtract(p.getAmount());
+                maxMarkDownRate = maxMarkDown.divide(p.getValue(), new MathContext(4, RoundingMode.HALF_EVEN));
+            }
         }
 
         Date spKey = Date.from(from.atZone(ZoneId.systemDefault()).toInstant());
@@ -160,6 +197,13 @@ public class ProductListJob {
         ps.setAmount(sumAmount);
         ps.setCount(count);
         ps.setValue(sumValue);
+        ps.setCount1(count1);
+        ps.setCount3(count3);
+        ps.setCount5(count5);
+        ps.setCount10(count10);
+        ps.setCount99(count99);
+        ps.setMaxMarkDown(maxMarkDown);
+        ps.setMaxMarkDownRate(maxMarkDownRate);
         ps.setUpdatedAt(new Date());
         ps.setUpdatedBy(BaseDTO.SYS);
 

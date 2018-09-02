@@ -11,8 +11,6 @@ import java.util.Date;
 //@CompoundIndex(unique = true, name = "date_time", def = "{'date':1, 'time':1}")
 public class ProductSummaryDTO extends BaseDTO {
 
-    // every minutes
-
     @NotNull
     @Indexed(unique = true)
     Date date;
@@ -21,21 +19,40 @@ public class ProductSummaryDTO extends BaseDTO {
 
     //product transfer amount
     BigDecimal amount;
+    /**
+     * total count
+     */
     int count;
+
+    /**
+     * 0~1W
+     */
+    int count1;
+    /**
+     * 1~3W
+     */
+    int count3;
+    /**
+     * 3~5W
+     */
+    int count5;
+    /**
+     * 5~10W
+     */
+    int count10;
+    /**
+     * 10W~
+     */
+    int count99;
+
+    BigDecimal maxMarkDown;
+    BigDecimal maxMarkDownRate;
 
     public ProductSummaryDTO() {
     }
 
     public ProductSummaryDTO(@NotNull Date date) {
         this.date = date;
-    }
-
-    public ProductSummaryDTO(@NotNull Date date, BigDecimal value, BigDecimal amount, int count) {
-        this.date = date;
-        this.value = value;
-        this.amount = amount;
-        this.count = count;
-        super.setBaseInfo();
     }
 
     public void setValue(BigDecimal value) {
@@ -48,5 +65,33 @@ public class ProductSummaryDTO extends BaseDTO {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public void setCount1(int count1) {
+        this.count1 = count1;
+    }
+
+    public void setCount3(int count3) {
+        this.count3 = count3;
+    }
+
+    public void setCount5(int count5) {
+        this.count5 = count5;
+    }
+
+    public void setCount10(int count10) {
+        this.count10 = count10;
+    }
+
+    public void setCount99(int count99) {
+        this.count99 = count99;
+    }
+
+    public void setMaxMarkDown(BigDecimal maxMarkDown) {
+        this.maxMarkDown = maxMarkDown;
+    }
+
+    public void setMaxMarkDownRate(BigDecimal maxMarkDownRate) {
+        this.maxMarkDownRate = maxMarkDownRate;
     }
 }
