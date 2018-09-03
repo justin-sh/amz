@@ -20,6 +20,7 @@ spring:
         database-dir: ${user.home}/.db/mongo/
       features: ["SYNC_DELAY", "ONLY_WITH_SSL", "NO_HTTP_INTERFACE_ARG"]
 
+
 #  datasource:
 #    url: jdbc:sqlite:${user.home}/.db/amz.db
 #    driver-class-name:
@@ -32,3 +33,10 @@ store:
 #logging:
 #  level:
 #    ROOT: DEBUG
+
+---
+spring:
+  profiles: lufax
+  data:
+    mongodb:
+      uri: mongodb://amz:amz@localhost:27017/amz

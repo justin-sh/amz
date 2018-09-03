@@ -1,5 +1,6 @@
 package com.lu.justin.tool.dao.dto;
 
+import com.lu.justin.tool.util.Money;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,12 +16,12 @@ public class ProductDTO extends BaseDTO {
     String category;
     String name;
     boolean isTransferred;
-    BigDecimal interest;
+    Money interest;
     int investPeriod;
-    BigDecimal value;
-    BigDecimal amount;
+    Money value;
+    Money amount;
     String nextDate;
-    BigDecimal fee = BigDecimal.ZERO;
+    Money fee = Money.fromCNY(BigDecimal.ZERO);
 
     Date validFrom;
     Date validTo;
@@ -46,7 +47,7 @@ public class ProductDTO extends BaseDTO {
     }
 
     public BigDecimal getInterest() {
-        return interest;
+        return interest.toCNY();
     }
 
     public int getInvestPeriod() {
@@ -54,11 +55,11 @@ public class ProductDTO extends BaseDTO {
     }
 
     public BigDecimal getValue() {
-        return value;
+        return value.toCNY();
     }
 
     public BigDecimal getAmount() {
-        return amount;
+        return amount.toCNY();
     }
 
     public String getNextDate() {
@@ -66,7 +67,7 @@ public class ProductDTO extends BaseDTO {
     }
 
     public BigDecimal getFee() {
-        return fee;
+        return fee.toCNY();
     }
 
     public Date getValidFrom() {
@@ -133,7 +134,7 @@ public class ProductDTO extends BaseDTO {
         }
 
         public Builder interest(String interest) {
-            productDTO.interest = new BigDecimal(interest);
+            productDTO.interest = Money.fromCNY(new BigDecimal(interest));
             return this;
         }
 
@@ -143,12 +144,12 @@ public class ProductDTO extends BaseDTO {
         }
 
         public Builder value(String value) {
-            productDTO.value = new BigDecimal(value);
+            productDTO.value = Money.fromCNY(new BigDecimal(value));
             return this;
         }
 
         public Builder amount(String amount) {
-            productDTO.amount = new BigDecimal(amount);
+            productDTO.amount = Money.fromCNY(new BigDecimal(amount));
             return this;
         }
 
@@ -158,7 +159,7 @@ public class ProductDTO extends BaseDTO {
         }
 
         public Builder fee(String fee) {
-            productDTO.fee = new BigDecimal(fee);
+            productDTO.fee = Money.fromCNY(new BigDecimal(fee));
             return this;
         }
 

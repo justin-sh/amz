@@ -1,5 +1,6 @@
 package com.lu.justin.tool.dao.dto;
 
+import com.lu.justin.tool.util.Money;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -15,10 +16,10 @@ public class ProductSummaryDTO extends BaseDTO {
     @Indexed(unique = true)
     Date date;
     // product value
-    BigDecimal value;
+    Money value;
 
     //product transfer amount
-    BigDecimal amount;
+    Money amount;
     /**
      * total count
      */
@@ -45,8 +46,8 @@ public class ProductSummaryDTO extends BaseDTO {
      */
     int count99;
 
-    BigDecimal maxMarkDown;
-    BigDecimal maxMarkDownRate;
+    Money maxMarkDown;
+    Money maxMarkDownRate;
 
     public ProductSummaryDTO() {
     }
@@ -56,11 +57,11 @@ public class ProductSummaryDTO extends BaseDTO {
     }
 
     public void setValue(BigDecimal value) {
-        this.value = value;
+        this.value = Money.fromCNY(value);
     }
 
     public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+        this.amount = Money.fromCNY(amount);
     }
 
     public void setCount(int count) {
@@ -88,10 +89,10 @@ public class ProductSummaryDTO extends BaseDTO {
     }
 
     public void setMaxMarkDown(BigDecimal maxMarkDown) {
-        this.maxMarkDown = maxMarkDown;
+        this.maxMarkDown = Money.fromCNY(maxMarkDown);
     }
 
     public void setMaxMarkDownRate(BigDecimal maxMarkDownRate) {
-        this.maxMarkDownRate = maxMarkDownRate;
+        this.maxMarkDownRate = Money.fromCNY(maxMarkDownRate);
     }
 }
