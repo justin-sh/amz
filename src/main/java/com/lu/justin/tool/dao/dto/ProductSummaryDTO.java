@@ -56,40 +56,84 @@ public class ProductSummaryDTO extends BaseDTO {
         this.date = date;
     }
 
+    public Date getDate() {
+        return date;
+    }
+
+    public Money getValue() {
+        return value;
+    }
+
     public void setValue(BigDecimal value) {
         this.value = Money.fromCNY(value);
+    }
+
+    public Money getAmount() {
+        return amount;
     }
 
     public void setAmount(BigDecimal amount) {
         this.amount = Money.fromCNY(amount);
     }
 
+    public int getCount() {
+        return count;
+    }
+
     public void setCount(int count) {
         this.count = count;
+    }
+
+    public int getCount1() {
+        return count1;
     }
 
     public void setCount1(int count1) {
         this.count1 = count1;
     }
 
+    public int getCount3() {
+        return count3;
+    }
+
     public void setCount3(int count3) {
         this.count3 = count3;
+    }
+
+    public int getCount5() {
+        return count5;
     }
 
     public void setCount5(int count5) {
         this.count5 = count5;
     }
 
+    public int getCount10() {
+        return count10;
+    }
+
     public void setCount10(int count10) {
         this.count10 = count10;
+    }
+
+    public int getCount99() {
+        return count99;
     }
 
     public void setCount99(int count99) {
         this.count99 = count99;
     }
 
+    public Money getMaxMarkDown() {
+        return maxMarkDown;
+    }
+
     public void setMaxMarkDown(BigDecimal maxMarkDown) {
         this.maxMarkDown = Money.fromCNY(maxMarkDown);
+    }
+
+    public Money getMaxMarkDownRate() {
+        return maxMarkDownRate;
     }
 
     public void setMaxMarkDownRate(BigDecimal maxMarkDownRate) {

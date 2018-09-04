@@ -1,12 +1,15 @@
 package com.lu.justin.tool.resouce;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lu.justin.tool.dao.ProductSummaryDAO;
+import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
-import com.lu.justin.tool.util.Caches;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -34,27 +37,41 @@ public class LuController {
     @Resource
     private RemoteService remoteService;
 
+    @Resource
+    private ProductSummaryDAO productSummaryDAO;
+
 
     @GetMapping(value = "/product-count")
-    public Map<String, Object> getT7ProductCount() {
-        String d7 = LocalDateTime.now().minus(Duration.ofDays(7)).format(DateTimeFormatter.ISO_DATE);
-        String d1 = LocalDateTime.now().minus(Duration.ofDays(1)).format(DateTimeFormatter.ISO_DATE);
-        String d0 = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
+    public Map<String, Object> getT7ProductCount(@RequestParam(value = "all", required = false, defaultValue = "false") String isAll) {
 
-        Map<String, Integer> dd7 = new TreeMap<>(Caches.cache.getOrDefault(d7, Collections.emptyMap()));
-        Map<String, Integer> dd1 = new TreeMap<>(Caches.cache.getOrDefault(d1, Collections.emptyMap()));
-        Map<String, Integer> dd0 = new TreeMap<>(Caches.cache.getOrDefault(d0, Collections.emptyMap()));
+        log.info("/product-count get data for param:isAll={}", isAll);
 
-        Map<String, Object> respJson = new HashMap<>(3);
-        respJson.put("d7", dd7);
-        respJson.put("d1", dd1);
-        respJson.put("d0", dd0);
+        LocalDateTime dateTime0 = LocalDateTime.now();
+        LocalDateTime dateTime1 = dateTime0.minusDays(1);
+        LocalDateTime dateTime7 = dateTime0.minusDays(7);
+        String d0 = dateTime0.format(DateTimeFormatter.ISO_DATE);
+        String d1 = dateTime1.format(DateTimeFormatter.ISO_DATE);
+        String d7 = dateTime7.format(DateTimeFormatter.ISO_DATE);
 
-        mergeData(dd0);
-        mergeData(dd1);
-        mergeData(dd7);
+        Map<String, Integer> dd0 = new TreeMap<>();
+        Map<String, Integer> dd1 = new TreeMap<>();
+        Map<String, Integer> dd7 = new TreeMap<>();
 
-        String ymdhms = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+        List<ProductSummaryDTO> psListD0 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime0.toLocalDate());
+
+        if (Boolean.parseBoolean(isAll)) {
+//            dd1.putAll(Caches.cache.getOrDefault(d1, Collections.emptyMap()));
+//            dd7.putAll(Caches.cache.getOrDefault(d7, Collections.emptyMap()));
+            List<ProductSummaryDTO> psListD1 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime1.toLocalDate());
+            List<ProductSummaryDTO> psListD7 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime7.toLocalDate());
+            psListD1.forEach(e -> dd1.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
+            psListD7.forEach(e -> dd7.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
+        }
+
+        psListD0.forEach(e -> dd0.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
+
+
+        String ymdhms = dateTime0.format(DateTimeFormatter.ISO_DATE_TIME);
 
         List<CompletableFuture> tasks = new ArrayList<>();
         if (!cacheOfTotalCount.containsKey(ymdhms)) {
@@ -101,8 +118,27 @@ public class LuController {
             }
         });
 
+        Map<String, Object> respJson = new HashMap<>(3);
+
+        mergeData(dd0);
+        mergeData(dd1);
+        mergeData(dd7);
+
+        respJson.put("d7", dd7);
+        respJson.put("d1", dd1);
+        respJson.put("d0", dd0);
+
         respJson.put("totalCount", cacheOfTotalCount.getOrDefault(ymdhms, -1));
         respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, "{}"));
+
+        if (!psListD0.isEmpty()) {
+            respJson.put("count1", psListD0.get(0).getCount1());
+            respJson.put("count3", psListD0.get(0).getCount3());
+            respJson.put("count5", psListD0.get(0).getCount5());
+            respJson.put("count10", psListD0.get(0).getCount10());
+            respJson.put("count99", psListD0.get(0).getCount99());
+        }
+
         return respJson;
     }
 

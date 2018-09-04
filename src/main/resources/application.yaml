@@ -39,4 +39,4 @@ spring:
   profiles: lufax
   data:
     mongodb:
-      uri: mongodb://amz:amz@localhost:27017/amz
+      uri: mongodb://amz:amz@172.23.45.194:27017/amz
