@@ -33,7 +33,7 @@ store:
 logging:
   level:
     ROOT: info
-    org.springframework.data.mongodb: debug
+    org.springframework.data.mongodb: info
     org.mongodb.driver.protocol.command: info
 
 ---
