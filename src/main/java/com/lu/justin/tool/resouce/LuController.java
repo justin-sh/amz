@@ -1,9 +1,9 @@
 package com.lu.justin.tool.resouce;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lu.justin.tool.dao.ProductSummaryDAO;
+import com.lu.justin.tool.dao.ProductTransferRateDAO;
 import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
-import com.lu.justin.tool.service.remote.RemoteService;
+import com.lu.justin.tool.dao.dto.ProductTransferRateDTO;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,17 +13,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 @RestController
 @RequestMapping(path = "/lu")
@@ -31,15 +27,11 @@ public class LuController {
 
     private final static Logger log = LoggerFactory.getLogger(LuController.class);
 
-    private final static Map<String, Integer> cacheOfTotalCount = new HashMap<>(2);
-    private final static Map<String, Object> cacheOfSuccessRate = new HashMap<>(2);
-
-    @Resource
-    private RemoteService remoteService;
-
     @Resource
     private ProductSummaryDAO productSummaryDAO;
 
+    @Resource
+    private ProductTransferRateDAO productTransferRateDAO;
 
     @GetMapping(value = "/product-count")
     public Map<String, Object> getT7ProductCount(@RequestParam(value = "all", required = false, defaultValue = "false") String isAll) {
@@ -49,9 +41,6 @@ public class LuController {
         LocalDateTime dateTime0 = LocalDateTime.now();
         LocalDateTime dateTime1 = dateTime0.minusDays(1);
         LocalDateTime dateTime7 = dateTime0.minusDays(7);
-        String d0 = dateTime0.format(DateTimeFormatter.ISO_DATE);
-        String d1 = dateTime1.format(DateTimeFormatter.ISO_DATE);
-        String d7 = dateTime7.format(DateTimeFormatter.ISO_DATE);
 
         Map<String, Integer> dd0 = new TreeMap<>();
         Map<String, Integer> dd1 = new TreeMap<>();
@@ -60,8 +49,6 @@ public class LuController {
         List<ProductSummaryDTO> psListD0 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime0.toLocalDate());
 
         if (Boolean.parseBoolean(isAll)) {
-//            dd1.putAll(Caches.cache.getOrDefault(d1, Collections.emptyMap()));
-//            dd7.putAll(Caches.cache.getOrDefault(d7, Collections.emptyMap()));
             List<ProductSummaryDTO> psListD1 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime1.toLocalDate());
             List<ProductSummaryDTO> psListD7 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime7.toLocalDate());
             psListD1.forEach(e -> dd1.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
@@ -70,53 +57,16 @@ public class LuController {
 
         psListD0.forEach(e -> dd0.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
 
-
-        String ymdhms = dateTime0.format(DateTimeFormatter.ISO_DATE_TIME);
-
-        List<CompletableFuture> tasks = new ArrayList<>();
-        if (!cacheOfTotalCount.containsKey(ymdhms)) {
-            cacheOfTotalCount.clear();
-            tasks.add(CompletableFuture.runAsync(() -> {
-                LocalDateTime _s = LocalDateTime.now();
-                try {
-                    String url = "https://list.lu.com/list/service/productListing/all-counts";
-                    String r = remoteService.get(url);
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, Object> json = mapper.readValue(r, Map.class);
-                    cacheOfTotalCount.put(ymdhms, (int) json.getOrDefault("p2pTransferCount", 0));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                LocalDateTime _e = LocalDateTime.now();
-                log.info("Get total count: {} [from:{} to:{}]", Duration.between(_s, _e), _s, _e);
-            }));
+        LocalDate today = LocalDate.now();
+        ProductTransferRateDTO transferRateDTO = productTransferRateDAO.findByDate(today);
+        Map<String, Object> successRate = new HashMap<>(2);
+        if (Objects.isNull(transferRateDTO)) {
+            successRate.put("actionType", "P2P_TRANSFER");
+            successRate.put("avgSuccessRatio", -1);
+        } else {
+            successRate.put("actionType", transferRateDTO.getActionType());
+            successRate.put("avgSuccessRatio", transferRateDTO.getAvgSuccessRatio());
         }
-
-        if (!cacheOfSuccessRate.containsKey(d0)) {
-            cacheOfSuccessRate.clear();
-            tasks.add(CompletableFuture.runAsync(() -> {
-                LocalDateTime _s = LocalDateTime.now();
-                try {
-                    String url = "https://list.lu.com/list/api/product/secondary-market-stat?actionType=P2P_TRANSFER";
-                    String r = remoteService.get(url);
-                    ObjectMapper mapper = new ObjectMapper();
-                    Map<String, Object> json = mapper.readValue(r, Map.class);
-                    cacheOfSuccessRate.put(d0, json.getOrDefault("data", Collections.EMPTY_MAP));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                LocalDateTime _e = LocalDateTime.now();
-                log.info("Get success rate:{} [from:{} to:{}]", Duration.between(_s, _e), _s, _e);
-            }));
-        }
-
-        tasks.forEach((t) -> {
-            try {
-                t.get(1, TimeUnit.SECONDS);
-            } catch (InterruptedException | ExecutionException | TimeoutException e) {
-                e.printStackTrace();
-            }
-        });
 
         Map<String, Object> respJson = new HashMap<>(3);
 
@@ -128,10 +78,11 @@ public class LuController {
         respJson.put("d1", dd1);
         respJson.put("d0", dd0);
 
-        respJson.put("totalCount", cacheOfTotalCount.getOrDefault(ymdhms, -1));
-        respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, "{}"));
+        respJson.put("successRate", successRate);
+        respJson.put("totalCount", 0);
 
         if (!psListD0.isEmpty()) {
+            respJson.put("totalCount", psListD0.get(0).getCount());
             respJson.put("count1", psListD0.get(0).getCount1());
             respJson.put("count3", psListD0.get(0).getCount3());
             respJson.put("count5", psListD0.get(0).getCount5());
