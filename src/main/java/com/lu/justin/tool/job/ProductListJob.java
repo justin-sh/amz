@@ -150,7 +150,7 @@ public class ProductListJob {
     }
 
 
-    @Scheduled(cron = "1/10 * 1-5 * * ?")
+    @Scheduled(cron = "1/10 * 0-5 * * ?")
     public void getTransferRate() {
         log.info("get secondary market stat");
 

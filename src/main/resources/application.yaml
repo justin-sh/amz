@@ -34,7 +34,7 @@ logging:
   level:
     ROOT: info
     org.springframework.data.mongodb: debug
-    org.mongodb.driver.protocol.command: debug
+    org.mongodb.driver.protocol.command: info
 
 ---
 spring:
