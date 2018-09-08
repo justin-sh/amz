@@ -1,0 +1,59 @@
+server:
+  port: 8000
+  servlet:
+    context-path: /amz
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/test
+      port: 27017
+  mongodb:
+    embedded:
+      version: 3.4.16
+      storage:
+        database-dir: ${user.home}/.db/mongo/
+      features: ["SYNC_DELAY", "ONLY_WITH_SSL", "NO_HTTP_INTERFACE_ARG"]
+
+
+#  datasource:
+#    url: jdbc:sqlite:${user.home}/.db/amz.db
+#    driver-class-name:
+
+
+# storage file config
+store:
+  location: /tmp/upload_dir
+
+logging:
+  level:
+    ROOT: info
+    org.springframework.data.mongodb: debug
+    org.mongodb.driver.protocol.command: debug
+
+---
+spring:
+  profiles:
+    active: default
+
+---
+spring:
+  profiles: ludev
+  data:
+    mongodb:
+      uri: mongodb://amz:amz@172.23.45.194:27017/amz
+
+---
+spring:
+  profiles: ludep
+  data:
+    mongodb:
+      uri: mongodb://amz:amz@172.23.45.194:27017/amz
+server:
+  servlet:
+    context-path: /cashier
