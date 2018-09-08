@@ -24,6 +24,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.TreeMap;
 
+@Profile(value = {"ludev", "default"})
 @Component
 public class ProductCountJob implements BeanPostProcessor {
 
