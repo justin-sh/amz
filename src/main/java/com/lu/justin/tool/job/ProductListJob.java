@@ -1,10 +1,13 @@
 package com.lu.justin.tool.job;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lu.justin.tool.dao.ProductInfoDAO;
 import com.lu.justin.tool.dao.ProductSummaryDAO;
+import com.lu.justin.tool.dao.ProductTransferRateDAO;
 import com.lu.justin.tool.dao.dto.BaseDTO;
 import com.lu.justin.tool.dao.dto.ProductDTO;
 import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
+import com.lu.justin.tool.dao.dto.ProductTransferRateDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Constant;
 import org.apache.http.client.utils.URIBuilder;
@@ -21,16 +24,15 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.math.RoundingMode;
 import java.net.URISyntaxException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Profile(value = {"ludev", "default"})
@@ -49,6 +51,9 @@ public class ProductListJob {
 
     @Resource
     private ProductSummaryDAO productSummaryDAO;
+
+    @Resource
+    private ProductTransferRateDAO productTransferRateDAO;
 
     @Scheduled(cron = "1/5 * * * * ?")
     public void getProductInfo() {
@@ -142,6 +147,39 @@ public class ProductListJob {
             summariseProductByTime(mm1);
         }
 
+    }
+
+
+    @Scheduled(cron = "1/10 * 1-5 * * ?")
+    public void getTransferRate() {
+        log.info("get secondary market stat");
+
+        LocalDate today = LocalDate.now();
+        ProductTransferRateDTO transferRateDTO = productTransferRateDAO.findByDate(today);
+        if (!Objects.isNull(transferRateDTO)) {
+            log.info("secondary market stat has got and return");
+            return;
+        }
+
+        String resp = remoteService.get("https://list.lu.com/list/api/product/secondary-market-stat?actionType=P2P_TRANSFER");
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Map<String, Object> json = mapper.readValue(resp, Map.class);
+            ArrayList data = (ArrayList) json.get("data");
+            System.out.println(data);
+            HashMap r1 = (HashMap) data.get(0);
+
+            String actionType = (String) r1.getOrDefault("actionType", "P2P_TRANSFER");
+            BigDecimal avgSuccessRatio = BigDecimal.valueOf((Double) r1.getOrDefault("avgSuccessRatio", 0));
+
+            ProductTransferRateDTO ptr = new ProductTransferRateDTO(Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()),actionType,avgSuccessRatio);
+            productTransferRateDAO.save(ptr);
+            log.info("secondary market stat save to db..");
+        } catch (IOException e) {
+            log.warn("get secondary market info failed! error:{}", e, e);
+        }
+
+        log.info("get secondary market stat finish..");
     }
 
     private void summariseProductByTime(LocalDateTime mm) {
