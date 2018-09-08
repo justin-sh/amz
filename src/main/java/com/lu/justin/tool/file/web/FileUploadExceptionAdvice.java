@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 @ControllerAdvice
 public class FileUploadExceptionAdvice {
 
-//    @ResponseBody
+    //    @ResponseBody
     @ExceptionHandler(MaxUploadSizeExceededException.class)
     public String handleMaxSizeException(HttpServletRequest request, HttpServletResponse response, RedirectAttributes model, Exception e) {
 //        return new ResponseEntity<>("Max Size", HttpStatus.PAYLOAD_TOO_LARGE);
@@ -29,7 +29,7 @@ public class FileUploadExceptionAdvice {
 //            e.printStackTrace();
 //        }
         e.printStackTrace();
-        model.addFlashAttribute("message","File Size Too Large");
+        model.addFlashAttribute("message", "File Size Too Large");
         return "redirect:/file";
     }
 }

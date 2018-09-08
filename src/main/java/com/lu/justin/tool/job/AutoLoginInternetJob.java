@@ -18,24 +18,24 @@ public class AutoLoginInternetJob {
 
     private final static Logger log = LoggerFactory.getLogger(AutoLoginInternetJob.class);
 
-    private final static Map<LocalDate,Boolean> loginCache = new HashMap<>();
+    private final static Map<LocalDate, Boolean> loginCache = new HashMap<>();
 
     @Resource
     private RemoteService remoteService;
 
     @Scheduled(cron = "*/10 * 1-5 * * ?")
-    public void autoLogin163(){
+    public void autoLogin163() {
         log.info("auto login internet by request 163.com");
 
-        if(loginCache.getOrDefault(LocalDate.now(),Boolean.FALSE)){
+        if (loginCache.getOrDefault(LocalDate.now(), Boolean.FALSE)) {
             log.info("auto login internet has already done~~~");
             return;
         }
 
-        String resp =  remoteService.get("https://www.163.com");
-        if(resp.contains("网易首页")){
+        String resp = remoteService.get("https://www.163.com");
+        if (resp.contains("网易首页")) {
             loginCache.clear();
-            loginCache.put(LocalDate.now(),Boolean.TRUE);
+            loginCache.put(LocalDate.now(), Boolean.TRUE);
             log.info("auto login internet has done~~~");
         }
 

@@ -74,12 +74,12 @@ public class ProductDTO extends BaseDTO {
         return validFrom;
     }
 
-    public Date getValidTo() {
-        return validTo;
-    }
-
     public void setValidFrom(Date validFrom) {
         this.validFrom = (Date) validFrom.clone();
+    }
+
+    public Date getValidTo() {
+        return validTo;
     }
 
     public void setValidTo(Date validTo) {

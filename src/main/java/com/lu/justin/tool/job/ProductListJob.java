@@ -172,7 +172,7 @@ public class ProductListJob {
             String actionType = (String) r1.getOrDefault("actionType", "P2P_TRANSFER");
             BigDecimal avgSuccessRatio = BigDecimal.valueOf((Double) r1.getOrDefault("avgSuccessRatio", 0));
 
-            ProductTransferRateDTO ptr = new ProductTransferRateDTO(Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()),actionType,avgSuccessRatio);
+            ProductTransferRateDTO ptr = new ProductTransferRateDTO(Date.from(today.atStartOfDay(ZoneId.systemDefault()).toInstant()), actionType, avgSuccessRatio);
             productTransferRateDAO.save(ptr);
             log.info("secondary market stat save to db..");
         } catch (IOException e) {

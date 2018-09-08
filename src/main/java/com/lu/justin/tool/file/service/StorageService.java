@@ -15,12 +15,14 @@ public interface StorageService {
 
     /**
      * load all files
+     *
      * @return Stream<Path>
      */
     Stream<Path> loadAll();
 
     /**
      * load one file from filename
+     *
      * @param filename file name
      * @return file path
      */
@@ -28,6 +30,7 @@ public interface StorageService {
 
     /**
      * load one file as Resource
+     *
      * @param filename file name
      * @return file resource
      */
@@ -35,6 +38,7 @@ public interface StorageService {
 
     /**
      * store uploaded file to store
+     *
      * @param file uploaded file
      */
     void store(MultipartFile file);

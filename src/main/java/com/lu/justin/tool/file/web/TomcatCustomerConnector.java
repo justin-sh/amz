@@ -10,7 +10,7 @@ public class TomcatCustomerConnector implements TomcatConnectorCustomizer {
     public void customize(Connector connector) {
         ProtocolHandler handler = connector.getProtocolHandler();
         if (handler instanceof AbstractHttp11Protocol) {
-            ((AbstractHttp11Protocol<?>) handler).setMaxSwallowSize(11*1024*1024);
+            ((AbstractHttp11Protocol<?>) handler).setMaxSwallowSize(11 * 1024 * 1024);
         }
 
     }

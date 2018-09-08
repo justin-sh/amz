@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductInfoDAO extends MongoRepository<ProductDTO, Long> ,CusProductDAO{
+public interface ProductInfoDAO extends MongoRepository<ProductDTO, Long>, CusProductDAO {
 
     @Query("{'prdId':{'$in':?0}}")
     List<ProductDTO> selectBySearcher(List<String> prdIds);
