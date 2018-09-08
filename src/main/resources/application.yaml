@@ -30,13 +30,30 @@ spring:
 store:
   location: /tmp/upload_dir
 
-#logging:
-#  level:
-#    ROOT: DEBUG
+logging:
+  level:
+    ROOT: info
+    org.springframework.data.mongodb: debug
+    org.mongodb.driver.protocol.command: debug
 
 ---
 spring:
-  profiles: lufax
+  profiles:
+    active: default
+
+---
+spring:
+  profiles: ludev
   data:
     mongodb:
       uri: mongodb://amz:amz@172.23.45.194:27017/amz
+
+---
+spring:
+  profiles: ludep
+  data:
+    mongodb:
+      uri: mongodb://amz:amz@172.23.45.194:27017/amz
+server:
+  servlet:
+    context-path: /cashier
