@@ -30,3 +30,5 @@ build/
 hs_err_pid*
 .idea/
 .gradle/
+logs/
+
