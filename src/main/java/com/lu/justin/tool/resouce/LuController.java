@@ -102,7 +102,7 @@ public class LuController {
                     ObjectMapper mapper = new ObjectMapper();
                     Map<String, Object> json = mapper.readValue(r, Map.class);
                     ArrayList data = (ArrayList) json.get("data");
-                    cacheOfSuccessRate.put(d0, data.get(0));
+                    cacheOfSuccessRate.put(d0, data);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -125,7 +125,8 @@ public class LuController {
         respJson.put("count10", 0);
         respJson.put("count99", 0);
         respJson.put("totalCount", cacheOfTotalCount.getOrDefault(ymdhms, -1));
-        respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, cacheOfDefaultSuccessRate));
+        respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, Arrays.asList(cacheOfDefaultSuccessRate)));
+        respJson.put("successRates", ((List) cacheOfSuccessRate.getOrDefault(d0, Arrays.asList(cacheOfDefaultSuccessRate))).get(0));
         return respJson;
     }
 
