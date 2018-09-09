@@ -98,7 +98,7 @@ public class ProductCountJob implements BeanPostProcessor {
         }
     }
 
-    @Scheduled(cron = "10 * * * * ?")
+    @Scheduled(cron = "10 1 * * * ?")
     public void saveData2File() {
         saveCache();
     }
@@ -120,7 +120,7 @@ public class ProductCountJob implements BeanPostProcessor {
 
             Caches.cache.putAll(json);
 
-            log.info(data);
+            log.info("load data from file success~~");
         } catch (IOException e) {
             log.error("read data to file failed!", e);
         }
@@ -140,7 +140,7 @@ public class ProductCountJob implements BeanPostProcessor {
                     Caches.cache.remove(k);
                 }
             });
-            log.info(Caches.cache.toString());
+            log.info("save to cache success~~");
             mapper.writeValue(Files.newOutputStream(Paths.get("/tmp/data.txt"), StandardOpenOption.WRITE), Caches.cache);
         } catch (IOException e) {
             log.error("save data to file failed!", e);
