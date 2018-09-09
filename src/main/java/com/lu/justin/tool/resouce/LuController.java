@@ -44,7 +44,7 @@ public class LuController {
 
 
     @GetMapping(value = "/product-count")
-    public Map<String, Object> getT7ProductCount(@RequestParam(value = "all", required = false, defaultValue = "false") String isAll) {
+    public Map<String, Object> getT7ProductCount(@RequestParam(value = "all", required = false, defaultValue = "true") String isAll) {
         String d7 = LocalDateTime.now().minus(Duration.ofDays(7)).format(DateTimeFormatter.ISO_DATE);
         String d1 = LocalDateTime.now().minus(Duration.ofDays(1)).format(DateTimeFormatter.ISO_DATE);
         String d0 = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
