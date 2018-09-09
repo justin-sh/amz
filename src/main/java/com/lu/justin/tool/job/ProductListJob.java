@@ -10,6 +10,7 @@ import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
 import com.lu.justin.tool.dao.dto.ProductTransferRateDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Constant;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -33,6 +34,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Profile(value = {"ludev", "default"})
@@ -59,7 +61,8 @@ public class ProductListJob {
      * execute get product info per 10 minutes at 0 to 7am
      */
     @Scheduled(cron = "1 0/10 0-7 * * ?")
-    public void getProductInfoAt0to7(){
+    public void getProductInfoAt0to7() {
+        randomDelay();
         getProductInfo();
     }
 
@@ -67,7 +70,8 @@ public class ProductListJob {
      * execute get product info per 10 minutes at 0 to 7am
      */
     @Scheduled(cron = "2 * 8-22 * * ?")
-    public void getProductInfoAt8to22(){
+    public void getProductInfoAt8to22() {
+        randomDelay();
         getProductInfo();
     }
 
@@ -75,11 +79,23 @@ public class ProductListJob {
      * execute get product info per 5 minutes at 23pm
      */
     @Scheduled(cron = "3 0/5 23 * * ?")
-    public void getProductInfoAt23to0(){
+    public void getProductInfoAt23to0() {
+        randomDelay();
         getProductInfo();
     }
 
-//    @Scheduled(cron = "1/5 * * * * ?")
+    private void randomDelay() {
+        long delay = RandomUtils.nextLong(TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(10));
+
+        try {
+            log.info("will random sleep {}ms", delay);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            log.warn("current thread sleep failed!");
+        }
+    }
+
+    //    @Scheduled(cron = "1/5 * * * * ?")
     private void getProductInfo() {
 
         int pageCount = 1;

@@ -4,6 +4,8 @@ import com.lu.justin.tool.file.service.StorageProperties;
 import com.lu.justin.tool.file.service.StorageService;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.servlet.MultipartConfigElement;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 
 @SpringBootApplication
@@ -62,7 +65,14 @@ public class Starter extends SpringBootServletInitializer {
 
     @Bean
     CloseableHttpClient httpClient() {
-        return HttpClientBuilder.create().build();
+        return HttpClientBuilder.create()
+                .setDefaultSocketConfig(SocketConfig.custom()
+                        .setSoTimeout((int) TimeUnit.SECONDS.toMillis(10))
+                        .build())
+                .setDefaultRequestConfig(RequestConfig.custom()
+                        .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(3))
+                        .build())
+                .build();
     }
 
 }
