@@ -46,16 +46,20 @@ public class LuController {
         Map<String, Integer> dd1 = new TreeMap<>();
         Map<String, Integer> dd7 = new TreeMap<>();
 
-        List<ProductSummaryDTO> psListD0 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime0.toLocalDate());
+        List<ProductSummaryDTO> psListD0 = productSummaryDAO.findByDateGreaterThanEqualAndCountGreaterThanOrderByDateDesc(dateTime0.toLocalDate(), 0);
 
         if (Boolean.parseBoolean(isAll)) {
-            List<ProductSummaryDTO> psListD1 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime1.toLocalDate());
-            List<ProductSummaryDTO> psListD7 = productSummaryDAO.findByDateGreaterThanEqualOrderByDateDesc(dateTime7.toLocalDate());
+            List<ProductSummaryDTO> psListD1 = productSummaryDAO.findByDateGreaterThanEqualAndCountGreaterThanOrderByDateDesc(dateTime1.toLocalDate(), 0);
+            List<ProductSummaryDTO> psListD7 = productSummaryDAO.findByDateGreaterThanEqualAndCountGreaterThanOrderByDateDesc(dateTime7.toLocalDate(), 0);
             psListD1.forEach(e -> dd1.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
             psListD7.forEach(e -> dd7.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
+            dd0.putIfAbsent("00:00", 0);
+            dd7.putIfAbsent("00:00", 0);
+
         }
 
         psListD0.forEach(e -> dd0.put(DateFormatUtils.format(e.getDate(), "HH:mm"), e.getCount()));
+        dd0.putIfAbsent("00:00", 0);
 
         LocalDate today = LocalDate.now();
         ProductTransferRateDTO transferRateDTO = productTransferRateDAO.findByDate(today);
@@ -82,6 +86,7 @@ public class LuController {
         respJson.put("totalCount", 0);
 
         if (!psListD0.isEmpty()) {
+            // data may not be real...
             respJson.put("totalCount", psListD0.get(0).getCount());
             respJson.put("count1", psListD0.get(0).getCount1());
             respJson.put("count3", psListD0.get(0).getCount3());

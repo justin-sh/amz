@@ -13,5 +13,5 @@ public interface ProductSummaryDAO extends MongoRepository<ProductSummaryDTO, Lo
 
     ProductSummaryDTO findByDate(Date date);
 
-    List<ProductSummaryDTO> findByDateGreaterThanEqualOrderByDateDesc(LocalDate date);
+    List<ProductSummaryDTO> findByDateGreaterThanEqualAndCountGreaterThanOrderByDateDesc(LocalDate date, int count);
 }
