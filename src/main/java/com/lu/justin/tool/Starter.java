@@ -13,10 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -28,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 @EnableScheduling
-public class Starter extends SpringBootServletInitializer {
+public class Starter/* extends SpringBootServletInitializer*/ {
 
     private static final Logger log = LoggerFactory.getLogger(Starter.class);
 
@@ -36,10 +34,10 @@ public class Starter extends SpringBootServletInitializer {
         SpringApplication.run(Starter.class, args);
     }
 
-    @Override
+/*    @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
         return builder.sources(Starter.class);
-    }
+    }*/
 
     @Bean
     CommandLineRunner init(StorageService storageService) {
