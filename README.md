@@ -8,3 +8,7 @@ to uncomment these two lines in build.gradle to use embedded mongodb if you do N
 //compile 'cz.jirutka.spring:embedmongo-spring:1.3.1'
 </pre>
 
+##2. about profile
+###1. default 
+###2. ludev for lu company dev machine
+###3. ludep for lu company deploy machine
