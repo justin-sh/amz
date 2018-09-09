@@ -41,6 +41,8 @@ dependencies {
     compile 'org.apache.httpcomponents:httpclient:4.3.1'
     compile 'org.apache.httpcomponents:httpcore:4.3'
 
+    compile 'org.apache.commons:commons-lang3:3.8'
+
 //    testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 compileJava.dependsOn(processResources)

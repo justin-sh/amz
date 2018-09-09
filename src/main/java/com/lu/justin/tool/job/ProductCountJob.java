@@ -3,6 +3,7 @@ package com.lu.justin.tool.job;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Caches;
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -24,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.TimeUnit;
 
 @Component
 @EnableScheduling
@@ -34,22 +36,66 @@ public class ProductCountJob implements BeanPostProcessor {
     @Resource
     private RemoteService remoteService;
 
-    @Scheduled(cron = "1/20 * * * * ?")
-    public void getProductCount() throws IOException {
-        String url = "https://list.lu.com/list/service/productListing/all-counts";
-        String r = remoteService.get(url);
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> json = mapper.readValue(r, Map.class);
-        int cnt = (int) json.getOrDefault("p2pTransferCount", 0);
+    /**
+     * execute get product info per 10 minutes at 0 to 7am
+     */
+    @Scheduled(cron = "1 0/10 0-7 * * ?")
+    public void getProductInfoAt0to7() {
+        randomDelay();
+        getProductCount();
+    }
 
-        LocalDateTime dt = LocalDateTime.now();
-        String today = dt.format(DateTimeFormatter.ISO_DATE);
-        String hm = dt.format(DateTimeFormatter.ISO_TIME).substring(0, 5);
-        if (!Caches.cache.containsKey(today)) {
-            Caches.cache.put(today, new TreeMap<>());
+    /**
+     * execute get product info per 10 minutes at 0 to 7am
+     */
+    @Scheduled(cron = "2/20 * 8-22 * * ?")
+    public void getProductInfoAt8to22() {
+        randomDelay();
+        getProductCount();
+    }
+
+    /**
+     * execute get product info per 5 minutes at 23pm
+     */
+    @Scheduled(cron = "3 0/5 23 * * ?")
+    public void getProductInfoAt23to0() {
+        randomDelay();
+        getProductCount();
+    }
+
+    private void randomDelay() {
+        long delay = RandomUtils.nextLong(TimeUnit.SECONDS.toMillis(1), TimeUnit.SECONDS.toMillis(10));
+
+        try {
+            log.info("will random sleep {}ms", delay);
+            Thread.sleep(delay);
+        } catch (InterruptedException e) {
+            log.warn("current thread sleep failed!");
         }
-        Caches.cache.get(today).put(hm, cnt);
-        log.info(today + " " + hm + "=" + cnt);
+    }
+
+
+    private void getProductCount() {
+
+        try {
+            String url = "https://list.lu.com/list/service/productListing/all-counts";
+            String r = remoteService.get(url);
+            ObjectMapper mapper = new ObjectMapper();
+            Map<String, Object> json = mapper.readValue(r, Map.class);
+            int cnt = (int) json.getOrDefault("p2pTransferCount", 0);
+
+            LocalDateTime dt = LocalDateTime.now();
+            String today = dt.format(DateTimeFormatter.ISO_DATE);
+            String hm = dt.format(DateTimeFormatter.ISO_TIME).substring(0, 5);
+            if (!Caches.cache.containsKey(today)) {
+                Caches.cache.put(today, new TreeMap<>());
+            }
+            Caches.cache.get(today).put(hm, cnt);
+            log.info(today + " " + hm + "=" + cnt);
+
+        } catch (Exception e) {
+            log.warn("get product count failed!", e);
+        }
     }
 
     @Scheduled(cron = "10 * * * * ?")
