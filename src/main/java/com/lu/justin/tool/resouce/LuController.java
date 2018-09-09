@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
@@ -30,13 +31,20 @@ public class LuController {
 
     private final static Map<String, Integer> cacheOfTotalCount = new HashMap<>(2);
     private final static Map<String, Object> cacheOfSuccessRate = new HashMap<>(2);
+    private final static Map<String, Object> cacheOfDefaultSuccessRate = new HashMap<>(2);
+
+
+    static {
+        cacheOfDefaultSuccessRate.put("actionType", "P2P_TRANSFER");
+        cacheOfDefaultSuccessRate.put("avgSuccessRatio", 0.898);
+    }
 
     @Resource
     private RemoteService remoteService;
 
 
     @GetMapping(value = "/product-count")
-    public Map<String, Object> getT7ProductCount() {
+    public Map<String, Object> getT7ProductCount(@RequestParam(value = "all", required = false, defaultValue = "false") String isAll) {
         String d7 = LocalDateTime.now().minus(Duration.ofDays(7)).format(DateTimeFormatter.ISO_DATE);
         String d1 = LocalDateTime.now().minus(Duration.ofDays(1)).format(DateTimeFormatter.ISO_DATE);
         String d0 = LocalDateTime.now().format(DateTimeFormatter.ISO_DATE);
@@ -49,6 +57,15 @@ public class LuController {
         respJson.put("d7", dd7);
         respJson.put("d1", dd1);
         respJson.put("d0", dd0);
+
+        dd0.putIfAbsent("00:00", 0);
+        if (Boolean.parseBoolean(isAll)) {
+            dd1.putIfAbsent("00:00", 0);
+            dd7.putIfAbsent("00:00", 0);
+        } else {
+            dd1.clear();
+            dd7.clear();
+        }
 
         mergeData(dd0);
         mergeData(dd1);
@@ -84,7 +101,8 @@ public class LuController {
                     String r = remoteService.get(url);
                     ObjectMapper mapper = new ObjectMapper();
                     Map<String, Object> json = mapper.readValue(r, Map.class);
-                    cacheOfSuccessRate.put(d0, json.getOrDefault("data", Collections.EMPTY_MAP));
+                    ArrayList data = (ArrayList) json.get("data");
+                    cacheOfSuccessRate.put(d0, data.get(0));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -101,8 +119,13 @@ public class LuController {
             }
         });
 
+        respJson.put("count1", 0);
+        respJson.put("count3", 0);
+        respJson.put("count5", 0);
+        respJson.put("count10", 0);
+        respJson.put("count99", 0);
         respJson.put("totalCount", cacheOfTotalCount.getOrDefault(ymdhms, -1));
-        respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, "{}"));
+        respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, cacheOfDefaultSuccessRate));
         return respJson;
     }
 
