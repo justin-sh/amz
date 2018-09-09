@@ -55,8 +55,32 @@ public class ProductListJob {
     @Resource
     private ProductTransferRateDAO productTransferRateDAO;
 
-    @Scheduled(cron = "1/5 * * * * ?")
-    public void getProductInfo() {
+    /**
+     * execute get product info per 10 minutes at 0 to 7am
+     */
+    @Scheduled(cron = "1 0/10 0-7 * * ?")
+    public void getProductInfoAt0to7(){
+        getProductInfo();
+    }
+
+    /**
+     * execute get product info per 10 minutes at 0 to 7am
+     */
+    @Scheduled(cron = "2 * 8-22 * * ?")
+    public void getProductInfoAt8to22(){
+        getProductInfo();
+    }
+
+    /**
+     * execute get product info per 5 minutes at 23pm
+     */
+    @Scheduled(cron = "3 0/5 23 * * ?")
+    public void getProductInfoAt23to0(){
+        getProductInfo();
+    }
+
+//    @Scheduled(cron = "1/5 * * * * ?")
+    private void getProductInfo() {
 
         int pageCount = 1;
         int curPage = 0;
