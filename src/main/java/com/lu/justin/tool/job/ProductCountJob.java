@@ -5,10 +5,7 @@ import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Caches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanPostProcessor;
-import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -25,9 +22,9 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.TreeMap;
 
-@Profile(value = {"ludev", "default"})
-@Component
-public class ProductCountJob implements BeanPostProcessor {
+//@Profile(value = {"ludev", "default"})
+//@Component
+public class ProductCountJob {
 
     private final static Logger log = LoggerFactory.getLogger(ProductCountJob.class);
 
@@ -52,7 +49,7 @@ public class ProductCountJob implements BeanPostProcessor {
         log.info(today + " " + hm + "=" + cnt);
     }
 
-    @Scheduled(cron = "10 * * * * ?")
+    @Scheduled(cron = "10 1 * * * ?")
     public void saveData2File() {
         saveCache();
     }
@@ -74,7 +71,7 @@ public class ProductCountJob implements BeanPostProcessor {
 
             Caches.cache.putAll(json);
 
-            log.info(data);
+            log.info("load data to cache from file success~~");
         } catch (IOException e) {
             log.error("read data to file failed!", e);
         }
@@ -94,8 +91,8 @@ public class ProductCountJob implements BeanPostProcessor {
                     Caches.cache.remove(k);
                 }
             });
-            log.info(Caches.cache.toString());
             mapper.writeValue(Files.newOutputStream(Paths.get("/tmp/data.txt"), StandardOpenOption.WRITE), Caches.cache);
+            log.info("save cache to file success~");
         } catch (IOException e) {
             log.error("save data to file failed!", e);
         }

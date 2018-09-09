@@ -38,7 +38,8 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter-thymeleaf'
     optional "org.springframework.boot:spring-boot-configuration-processor"
 
-    providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+    // replace compile to providedRuntime if you want to build a war package
+    compile 'org.springframework.boot:spring-boot-starter-tomcat'
 
 //    compile("org.mybatis.spring.boot:mybatis-spring-boot-starter:1.3.2")
 
