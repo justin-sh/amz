@@ -5,6 +5,7 @@ import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Caches;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -119,12 +120,17 @@ public class LuController {
             }
         });
 
+        int defaultCurrentCount = -1;
+        if (!CollectionUtils.isEmpty(dd0) && !cacheOfTotalCount.containsKey(d0)) {
+            defaultCurrentCount = ((TreeMap<String, Integer>) dd0).lastEntry().getValue();
+        }
+
         respJson.put("count1", 0);
         respJson.put("count3", 0);
         respJson.put("count5", 0);
         respJson.put("count10", 0);
         respJson.put("count99", 0);
-        respJson.put("totalCount", cacheOfTotalCount.getOrDefault(ymdhms, -1));
+        respJson.put("totalCount", cacheOfTotalCount.getOrDefault(ymdhms, defaultCurrentCount));
         respJson.put("successRate", cacheOfSuccessRate.getOrDefault(d0, Arrays.asList(cacheOfDefaultSuccessRate)));
         respJson.put("successRates", ((List) cacheOfSuccessRate.getOrDefault(d0, Arrays.asList(cacheOfDefaultSuccessRate))).get(0));
         return respJson;
