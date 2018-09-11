@@ -149,6 +149,7 @@ public class ProductListJob {
         Element href = e.selectFirst(".product-name a");
         b.name(href.text());
         b.isTransferred(e.select(".product-name").text().contains("转"));
+        b.isOverdue(e.select(".product-name").text().contains("逾"));
         try {
             URIBuilder u = new URIBuilder(href.attr("href"));
             u.getQueryParams().forEach(x -> {
@@ -182,11 +183,11 @@ public class ProductListJob {
         LocalDateTime mm1 = LocalDateTime.now();
         summariseProductByTime(mm1);
 
+        //summarise previous minute data when current time's second is less than 10
         if (mm1.getSecond() < 10) {
             mm1 = mm1.minusMinutes(1);
             summariseProductByTime(mm1);
         }
-
     }
 
 
@@ -244,6 +245,7 @@ public class ProductListJob {
         int count99 = 0;
         BigDecimal maxMarkDown = BigDecimal.ZERO;
         BigDecimal maxMarkDownRate = BigDecimal.ZERO;
+        int countOfOverdue = 0;
         for (ProductDTO p : list) {
             count++;
             sumValue = sumValue.add(p.getValue());
@@ -258,6 +260,10 @@ public class ProductListJob {
                 count10++;
             } else {
                 count99++;
+            }
+
+            if (p.isOverdueTransferred()) {
+                countOfOverdue++;
             }
 
             if (p.getValue().subtract(p.getAmount()).subtract(maxMarkDown).compareTo(BigDecimal.ZERO) > 0) {
@@ -282,6 +288,7 @@ public class ProductListJob {
         ps.setCount5(count5);
         ps.setCount10(count10);
         ps.setCount99(count99);
+        ps.setCountOfOverdue(countOfOverdue);
         ps.setMaxMarkDown(maxMarkDown);
         ps.setMaxMarkDownRate(maxMarkDownRate);
         ps.setUpdatedAt(new Date());

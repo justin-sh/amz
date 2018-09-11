@@ -16,6 +16,7 @@ public class ProductDTO extends BaseDTO {
     String category;
     String name;
     boolean isTransferred;
+    boolean isOverdueTransferred;
     Money interest;
     int investPeriod;
     Money value;
@@ -44,6 +45,10 @@ public class ProductDTO extends BaseDTO {
 
     public boolean isTransferred() {
         return isTransferred;
+    }
+
+    public boolean isOverdueTransferred() {
+        return isOverdueTransferred;
     }
 
     public BigDecimal getInterest() {
@@ -130,6 +135,11 @@ public class ProductDTO extends BaseDTO {
 
         public Builder isTransferred(boolean isTransfered) {
             productDTO.isTransferred = isTransfered;
+            return this;
+        }
+
+        public Builder isOverdue(boolean isOverdue) {
+            productDTO.isOverdueTransferred = isOverdue;
             return this;
         }
 

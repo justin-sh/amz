@@ -49,6 +49,8 @@ public class ProductSummaryDTO extends BaseDTO {
     Money maxMarkDown;
     Money maxMarkDownRate;
 
+    int countOfOverdue;
+
     public ProductSummaryDTO() {
     }
 
@@ -138,5 +140,13 @@ public class ProductSummaryDTO extends BaseDTO {
 
     public void setMaxMarkDownRate(BigDecimal maxMarkDownRate) {
         this.maxMarkDownRate = Money.fromCNY(maxMarkDownRate);
+    }
+
+    public int getCountOfOverdue() {
+        return countOfOverdue;
+    }
+
+    public void setCountOfOverdue(int countOfOverdue) {
+        this.countOfOverdue = countOfOverdue;
     }
 }

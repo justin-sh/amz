@@ -7,6 +7,7 @@ import com.lu.justin.tool.dao.dto.ProductTransferRateDTO;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -72,6 +73,11 @@ public class LuController {
             successRate.put("avgSuccessRatio", transferRateDTO.getAvgSuccessRatio());
         }
 
+        Date updatedAt = new Date();
+        if (!CollectionUtils.isEmpty(psListD0)) {
+            updatedAt = psListD0.get(0).getUpdatedAt();
+        }
+
         Map<String, Object> respJson = new HashMap<>(3);
 
         mergeData(dd0);
@@ -82,6 +88,7 @@ public class LuController {
         respJson.put("d1", dd1);
         respJson.put("d0", dd0);
 
+        respJson.put("updatedAt", DateFormatUtils.format(updatedAt, "HH:mm"));
         respJson.put("successRate", successRate);
         respJson.put("totalCount", 0);
 
@@ -93,6 +100,17 @@ public class LuController {
             respJson.put("count5", psListD0.get(0).getCount5());
             respJson.put("count10", psListD0.get(0).getCount10());
             respJson.put("count99", psListD0.get(0).getCount99());
+            respJson.put("countOfOverdue", psListD0.get(0).getCountOfOverdue());
+            respJson.put("sumAmount", psListD0.get(0).getAmount().toCNY());
+        } else {
+            respJson.put("totalCount", 0);
+            respJson.put("count1", 0);
+            respJson.put("count3", 0);
+            respJson.put("count5", 0);
+            respJson.put("count10", 0);
+            respJson.put("count99", 0);
+            respJson.put("countOfOverdue", 0);
+            respJson.put("sumAmount", 0);
         }
 
         return respJson;
