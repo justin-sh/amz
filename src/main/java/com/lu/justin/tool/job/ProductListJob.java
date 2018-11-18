@@ -299,4 +299,26 @@ public class ProductListJob {
         log.info("sum result:count {}, value:{} amount:{}", count, sumValue, sumAmount);
     }
 
+
+    //获取一级市场P2P产品
+    @Scheduled(cron = "*/1 * * * * ?")
+    public void getP2PProductInfo() {
+        int totalCount = 0;
+        String url = "https://www.lup2p.com/lup2p/p2p";
+        String r = remoteService.get(url);
+//        log.info(r);
+        Document root = Jsoup.parse(r);
+        Elements prdList = root.select("li.product-rows-item");
+        for (Element e : prdList) {
+            log.info(e.selectFirst("a").text());
+            log.info(e.selectFirst(".product-status").text());
+            if (!"已售完".equals(e.selectFirst(".product-status").text())) {
+                totalCount++;
+            }
+        }
+
+        log.info("当前一级市场P2P在售{}件", totalCount);
+
+    }
+
 }

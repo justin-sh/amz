@@ -6,6 +6,7 @@ import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.config.SocketConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
@@ -70,6 +71,7 @@ public class Starter/* extends SpringBootServletInitializer*/ {
                 .setDefaultRequestConfig(RequestConfig.custom()
                         .setConnectTimeout((int) TimeUnit.SECONDS.toMillis(3))
                         .build())
+                .setHostnameVerifier(SSLConnectionSocketFactory.ALLOW_ALL_HOSTNAME_VERIFIER)
                 .build();
     }
 
