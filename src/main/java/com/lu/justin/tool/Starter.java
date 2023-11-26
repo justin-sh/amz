@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 @SpringBootApplication
 @EnableConfigurationProperties(StorageProperties.class)
 @EnableScheduling
-public class Starter/* extends SpringBootServletInitializer*/ {
+public class Starter {
 
     private static final Logger log = LoggerFactory.getLogger(Starter.class);
 
