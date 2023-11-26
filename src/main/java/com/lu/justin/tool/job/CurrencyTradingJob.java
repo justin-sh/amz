@@ -5,6 +5,7 @@ import com.lu.justin.tool.dao.CurrencyRateDAO;
 import com.lu.justin.tool.dao.dto.CurrencyRateDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Money;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.slf4j.Logger;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Arrays;

@@ -9,16 +9,14 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/test
-      port: 27017
-  mongodb:
-    embedded:
-      version: 3.4.16
-      storage:
-        database-dir: ${user.home}/.db/mongo/
-      features: ["SYNC_DELAY", "ONLY_WITH_SSL", "NO_HTTP_INTERFACE_ARG"]
+  datasource:
+    url: jdbc:mysql://${MYSQL_HOST:localhost}:3306/houseof4_db52ayaf4m8s5w
+    username: houseof4_ur5xnqpsvdfhr
+    password: sYGAkL8gaAPhx3V
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    show-sql: true
 
 
 #  datasource:
@@ -33,8 +31,8 @@ store:
 logging:
   level:
     ROOT: info
-    org.springframework.data.mongodb: info
-    org.mongodb.driver.protocol.command: info
+#    org.springframework.data.mongodb: info
+#    org.mongodb.driver.protocol.command: info
 
 ---
 spring:
@@ -44,16 +42,16 @@ spring:
 ---
 spring:
   profiles: ludev
-  data:
-    mongodb:
-      uri: mongodb://amz:amz@172.23.45.194:27017/amz
+#  data:
+#    mongodb:
+#      uri: mongodb://amz:amz@172.23.45.194:27017/amz
 
 ---
 spring:
   profiles: ludep
-  data:
-    mongodb:
-      uri: mongodb://amz:amz@172.23.45.194:27017/amz
+#  data:
+#    mongodb:
+#      uri: mongodb://amz:amz@172.23.45.194:27017/amz
 server:
   servlet:
     context-path: /cashier

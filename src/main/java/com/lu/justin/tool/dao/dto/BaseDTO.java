@@ -1,16 +1,22 @@
 package com.lu.justin.tool.dao.dto;
 
+import jakarta.annotation.Generated;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.springframework.data.annotation.Id;
 
 import java.io.Serializable;
 import java.util.Date;
 
+@MappedSuperclass
 public class BaseDTO implements Serializable {
 
     public final static String SYS = "SYS";
 
     @Id
+    @GeneratedValue
     protected String id;
     protected Date createdAt;
     protected String createdBy;

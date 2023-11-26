@@ -1,13 +1,13 @@
 package com.lu.justin.tool.job;
 
 import com.lu.justin.tool.service.remote.RemoteService;
+import jakarta.annotation.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;

@@ -1,19 +1,20 @@
 package com.lu.justin.tool.dao.dto;
 
 import com.lu.justin.tool.util.Money;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Document(collection = "product_summary")
+//@Document(collection = "product_summary")
+@Entity
+@Table(name = "product_summary")
 //@CompoundIndex(unique = true, name = "date_time", def = "{'date':1, 'time':1}")
 public class ProductSummaryDTO extends BaseDTO {
 
     @NotNull
-    @Indexed(unique = true)
     Date date;
     // product value
     Money value;

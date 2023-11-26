@@ -4,6 +4,7 @@ import com.lu.justin.tool.dao.ProductSummaryDAO;
 import com.lu.justin.tool.dao.ProductTransferRateDAO;
 import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
 import com.lu.justin.tool.dao.dto.ProductTransferRateDTO;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

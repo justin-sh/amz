@@ -3,13 +3,13 @@ package com.lu.justin.tool.job;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Caches;
+import jakarta.annotation.PreDestroy;
+import jakarta.annotation.Resource;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
-import javax.annotation.Resource;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

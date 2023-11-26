@@ -1,17 +1,18 @@
 package com.lu.justin.tool.dao.dto;
 
 import com.lu.justin.tool.util.Money;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Objects;
 
-@Document(collection = "products")
+@Entity
+@Table(name = "products")
 public class ProductDTO extends BaseDTO {
 
-    @Indexed(unique = true)
+//    @Indexed(unique = true)
     String prdId;
     String category;
     String name;
@@ -26,10 +27,6 @@ public class ProductDTO extends BaseDTO {
 
     Date validFrom;
     Date validTo;
-
-    private ProductDTO() {
-
-    }
 
     public String getPrdId() {
         return prdId;

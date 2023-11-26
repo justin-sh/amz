@@ -2,6 +2,7 @@ package com.lu.justin.tool;
 
 import com.lu.justin.tool.file.service.StorageProperties;
 import com.lu.justin.tool.file.service.StorageService;
+import jakarta.servlet.MultipartConfigElement;
 import org.apache.catalina.connector.Connector;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 import org.apache.http.client.config.RequestConfig;
@@ -19,7 +20,6 @@ import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactor
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import javax.servlet.MultipartConfigElement;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
@@ -34,11 +34,6 @@ public class Starter/* extends SpringBootServletInitializer*/ {
     public static void main(String[] args) {
         SpringApplication.run(Starter.class, args);
     }
-
-/*    @Override
-    protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-        return builder.sources(Starter.class);
-    }*/
 
     @Bean
     CommandLineRunner init(StorageService storageService) {

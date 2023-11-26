@@ -10,6 +10,7 @@ import com.lu.justin.tool.dao.dto.ProductSummaryDTO;
 import com.lu.justin.tool.dao.dto.ProductTransferRateDTO;
 import com.lu.justin.tool.service.remote.RemoteService;
 import com.lu.justin.tool.util.Constant;
+import jakarta.annotation.Resource;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.client.utils.URIBuilder;
 import org.jsoup.Jsoup;
@@ -19,12 +20,10 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
+//import javax.annotation.Resource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
@@ -232,7 +231,7 @@ public class ProductListJob {
         LocalDateTime from = mm.withSecond(0).withNano(0);
         LocalDateTime to = from.withSecond(59);
 
-        List<ProductDTO> list = productInfoDAO.findByCondition(Query.query(Criteria.where("validFrom").lte(to).and("validTo").gte(from)));
+        List<ProductDTO> list = productInfoDAO.findByCondition(from, to);
 
         log.info("get product info count:{}", list.size());
         int count = 0;

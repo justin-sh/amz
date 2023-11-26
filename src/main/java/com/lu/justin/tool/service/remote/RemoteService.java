@@ -1,5 +1,6 @@
 package com.lu.justin.tool.service.remote;
 
+import jakarta.annotation.Resource;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
@@ -9,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.io.IOException;
 
 @Service

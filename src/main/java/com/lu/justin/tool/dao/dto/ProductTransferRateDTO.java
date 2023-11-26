@@ -1,19 +1,21 @@
 package com.lu.justin.tool.dao.dto;
 
 import com.lu.justin.tool.util.Money;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
-@Document(collection = "product_transfer_rate")
+//@Document(collection = "product_transfer_rate")
+@Entity
+@Table(name = "product_transfer_rate")
 //@CompoundIndex(unique = true, name = "date_time", def = "{'date':1, 'time':1}")
 public class ProductTransferRateDTO extends BaseDTO {
 
     @NotNull
-    @Indexed(unique = true)
+//    @Indexed(unique = true)
     Date date;
 
     @NotNull
@@ -42,5 +44,17 @@ public class ProductTransferRateDTO extends BaseDTO {
 
     public String getActionType() {
         return actionType;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public void setAvgSuccessRatio(Money avgSuccessRatio) {
+        this.avgSuccessRatio = avgSuccessRatio;
+    }
+
+    public void setActionType(String actionType) {
+        this.actionType = actionType;
     }
 }
